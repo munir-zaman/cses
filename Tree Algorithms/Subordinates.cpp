@@ -1,6 +1,6 @@
 #include "bits/stdc++.h"
 
-// NOTE: Not solved yet!
+// NOTE: Getting TLE on some test cases
 
 struct Node {
     int value;
@@ -9,20 +9,29 @@ struct Node {
     Node* parent;
     std::vector<Node*> children;
 
-    void make_parent(Node *p) {
-        // set parent node
-        this->parent = p;
-        // set child node of p
-        p->children.push_back(this);
+    void increase_descendants(int n) {
+        descendants += n;
+        if (parent != nullptr) {
+            // if has parent, increase descendants of parent
+            parent->increase_descendants(n);
+        }
     }
 
     void add_child(Node *child) {
-        child->make_parent(this);
+        child->parent = this;
+        this->children.push_back(child);
+
+        this->increase_descendants(1 + child->descendants);
     }
+
+    void make_parent(Node *p) {
+        p->add_child(this);
+    }
+
 };
 
 void print_children(Node n) {
-    std::cout << n.value << " -> ";
+    std::cout << n.value << " ( " << n.descendants << " ) " << " -> ";
     for (auto x : n.children) {
         std::cout << x->value << " ";
     }
@@ -42,6 +51,9 @@ void print_tree(Node* n) {
 
 
 int main() {
+    std::ios::sync_with_stdio(0);
+    std::cin.tie(0);
+
     int n;
     std::cin >> n;
 
@@ -59,4 +71,8 @@ int main() {
         employees[i].make_parent(&employees[parent-1]);
     }
     
+    for (auto &e : employees) {
+        std::cout << e.descendants << " ";
+    }
+    std::cout << "\n";
 }
