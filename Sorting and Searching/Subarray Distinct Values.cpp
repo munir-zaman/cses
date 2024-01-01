@@ -9,6 +9,7 @@ int count_distincts(std::map<ll,int> N) {
     return ans;
 }
 
+
 int main() {
     ll n, k;
     std::cin >> n >> k;
@@ -16,22 +17,26 @@ int main() {
     std::vector<ll> nums(n,0);
     for(auto &v : nums) std::cin >> v;
     
-    std::map<ll,std::map<ll,int>> table;
+    std::vector<ll> repeats;
+    ll last_num = nums[0];
+    ll counter = 0;
+    for (int i = 0; i<n; i++) {
+        if (last_num == nums[i]) counter++;
+        else {
+            repeats.push_back(counter);
+            counter = 1;
+        }
+        last_num = nums[i];
+    }
+
+    repeats.push_back(counter);
 
     ll ans = 0;
-    for (int i = 0; i<n; i++) {
-        if (i>0) table[i] = table[i-1];
-        table[i][nums[i]]++;
+    ll sum = 0;
+    for (int i = 0; i < repeats.size(); i++) {
+        if (i-k>=0) sum = sum - repeats[i-k];
+        ans += (1 << repeats[i]) - 1 + repeats[i]*sum;
+        sum = sum + repeats[i];
     }
-
-    for (int i = 0; i<n; i++) {
-
-        std::cout << "index " << i << ": ";
-        for (auto &x : table[i]) {
-            std::cout << "{ " << x.first << ", " << x.second << " } ";
-        }
-        std::cout << " " << count_distincts(table[i]) << std::endl;
-    }
-
-    std::cout << std::endl;
+    std::cout << ans << "\n";
 }
